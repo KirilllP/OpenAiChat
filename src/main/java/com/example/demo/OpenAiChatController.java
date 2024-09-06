@@ -12,7 +12,6 @@ public class OpenAiChatController {
 
     //for some reason this method is never called
     @MessageMapping("/hello")
-    @SendTo("/topic/greetings")
     public ChatMessageDTO send(@Payload ChatMessageDTO message) throws Exception {
         return chatService.processRequest(message);
     }
