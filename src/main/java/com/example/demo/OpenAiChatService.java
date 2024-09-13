@@ -3,5 +3,5 @@ package com.example.demo;
 
 public interface OpenAiChatService {
 
-    public ChatMessageDTO processRequest(ChatMessageDTO chatMessageDTO);
+    public com.example.demo.ChatMessageDTO processRequest(com.example.demo.ChatMessageDTO chatMessageDTO);
 }
