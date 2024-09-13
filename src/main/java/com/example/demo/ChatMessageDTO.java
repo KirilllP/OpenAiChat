@@ -1,11 +1,13 @@
 package com.example.demo;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
-public class ChatMessageDTO {
+@NoArgsConstructor
+@Builder
+@ToString
+public class ChatMessageDTO{
     String message;
     String from;
 }

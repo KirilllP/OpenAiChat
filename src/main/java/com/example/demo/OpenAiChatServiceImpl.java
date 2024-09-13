@@ -5,9 +5,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class OpenAiChatServiceImpl implements OpenAiChatService {
 
-    //here will be implemented all further logic after problem with controller will be solved
+    //here will be implemented all further logic
     @Override
     public ChatMessageDTO processRequest(ChatMessageDTO chatMessageDTO) {
-        return new ChatMessageDTO("server", "hiii");
+        return ChatMessageDTO.builder()
+                .from("server")
+                .message("hiii, mr" + chatMessageDTO.getFrom()).build();
     }
 }
