@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.corundumstudio.socketio.SocketIONamespace;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import com.corundumstudio.socketio.listener.DataListener;
@@ -17,23 +18,23 @@ public class SocketModule {
     public SocketModule(SocketIOServer server, SocketService socketService) {
         this.server = server;
         this.socketService = socketService;
-        server.addConnectListener(onConnected());
-        server.addDisconnectListener(onDisconnected());
-        server.addEventListener("send_message", ChatMessageDTO.class, onChatReceived());
 
+        SocketIONamespace chatNamespace = server.addNamespace("/chat");
+        chatNamespace.addConnectListener(onConnected());
+        chatNamespace.addDisconnectListener(onDisconnected());
+        chatNamespace.addEventListener(ClientEvents.MESSAGE_GPT_SEND, ThreadMessageDto.class, onChatReceived());
     }
 
-    private DataListener<ChatMessageDTO> onChatReceived() {
+    private DataListener<ThreadMessageDto> onChatReceived() {
         return (senderClient, data, ackSender) -> {
             log.info(data.toString());
-            socketService.sendMessage(data,"get_message", senderClient);
+            socketService.sendMessage(data, senderClient);
         };
     }
 
     private ConnectListener onConnected() {
         return (client) -> {
-            // room here will be changed to something that identifies user e.g. id or email. we can take this parameter from HttpHeaders
-            String room = client.getHandshakeData().getSingleUrlParam("room");
+            String room = client.getHandshakeData().getHttpHeaders().get("username");
             client.joinRoom(room);
             log.info("Socket ID[{}]  Connected to socket", client.getSessionId().toString());
         };
@@ -42,6 +43,8 @@ public class SocketModule {
 
     private DisconnectListener onDisconnected() {
         return client -> {
+            String room = client.getHandshakeData().getHttpHeaders().get("username");
+            client.leaveRoom(room);
             log.info("Client[{}] - Disconnected from socket", client.getSessionId().toString());
         };
     }

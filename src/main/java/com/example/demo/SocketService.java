@@ -12,13 +12,16 @@ public class SocketService {
 
     OpenAiChatService openAiChatService;
 
-    public void sendMessage(ChatMessageDTO message, String eventName, SocketIOClient senderClient) {
-//        for (SocketIOClient client : senderClient.getNamespace().getRoomOperations(message.getFrom()).getClients()) {
-//            if (!client.getSessionId().equals(senderClient.getSessionId())) {
-//                client.sendEvent(eventName, createMessage(message.getMessage()));
-//            }
-//        }
-        ChatMessageDTO responce = openAiChatService.processRequest(message);
-        senderClient.sendEvent(eventName, responce);
+    public void sendMessage(ThreadMessageDto message, SocketIOClient senderClient) {
+
+        ThreadDto thread;
+        if(message.getThreadId()==null) {
+            thread = openAiChatService.createThread(message);
+            message.setThreadId(thread.getThreadId());
+            senderClient.sendEvent(ServerEvents.THREAD_CREATED, thread);
+            //TODO save thread
+        }
+
+        senderClient.sendEvent(ServerEvents.MESSAGE_CREATED, openAiChatService.sendMessage(message));
     }
 }
