@@ -3,5 +3,7 @@ package com.example.demo;
 
 public interface OpenAiChatService {
 
-    public ChatMessageDTO processRequest(ChatMessageDTO chatMessageDTO);
+    ThreadDto createThread(ThreadMessageDto messageDto);
+
+    String sendMessage(ThreadMessageDto messageDto);
 }
